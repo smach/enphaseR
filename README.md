@@ -1,6 +1,11 @@
 
 # enphaseR
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/smach/enphaseR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/smach/enphaseR/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 Fetch solar production data for your own Enphase system from the
 official [Enphase Enlighten cloud API
 (v4)](https://developer-v4.enphase.com), in R.
