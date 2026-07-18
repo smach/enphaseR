@@ -1,4 +1,23 @@
 url: https://smach.github.io/enphaseR/
+
 template:
   bootstrap: 5
+  light-switch: true
+  bootswatch: zephyr
+  bslib:
+    primary: "#e8871a"          # solar amber
+    base_font: {google: "Source Sans 3"}
+    code_font: {google: "Source Code Pro"}
 
+reference:
+- title: Authentication
+  desc: One-time browser setup, then automatic token rotation forever
+  contents:
+  - enphase_authorize
+  - enphase_refresh_tokens
+- title: Fetching data
+  desc: Tidy tibbles from the Enlighten cloud API
+  contents:
+  - enphase_systems
+  - enphase_summary
+  - enphase_production
