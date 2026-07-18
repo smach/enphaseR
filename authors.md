@@ -6,6 +6,9 @@
 
 ## Citation
 
+Source:
+[`DESCRIPTION`](https://github.com/smach/enphaseR/blob/main/DESCRIPTION)
+
 Machlis S (2026). *enphaseR: Access Solar Production Data from the
 Enphase Enlighten Cloud API*. R package version 0.1.0,
 <https://smach.github.io/enphaseR/>.

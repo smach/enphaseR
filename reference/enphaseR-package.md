@@ -15,6 +15,10 @@ Useful links:
 
 - <https://smach.github.io/enphaseR/>
 
+- <https://github.com/smach/enphaseR>
+
+- Report bugs at <https://github.com/smach/enphaseR/issues>
+
 ## Author
 
 **Maintainer**: Sharon Machlis <smachlis@gmail.com>
