@@ -12,6 +12,8 @@ Fetch solar energy production data for your own Enphase system from the official
 Useful links:
 \itemize{
   \item \url{https://smach.github.io/enphaseR/}
+  \item \url{https://github.com/smach/enphaseR}
+  \item Report bugs at \url{https://github.com/smach/enphaseR/issues}
 }
 
 }

@@ -5,6 +5,9 @@ template:
   light-switch: true
   bootswatch: zephyr
 
+navbar:
+  bg: primary
+
 reference:
 - title: Authentication
   desc: One-time browser setup, then automatic token rotation forever

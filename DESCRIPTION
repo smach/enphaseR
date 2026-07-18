@@ -30,4 +30,5 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
-URL: https://smach.github.io/enphaseR/
+URL: https://smach.github.io/enphaseR/, https://github.com/smach/enphaseR
+BugReports: https://github.com/smach/enphaseR/issues
