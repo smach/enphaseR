@@ -1,0 +1,130 @@
+---
+output: github_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+# enphaseR
+
+Fetch solar production data for your own Enphase system from the official
+[Enphase Enlighten cloud API (v4)](https://developer-v4.enphase.com), in R.
+
+The hard part of the Enphase API is authentication, and that's what this
+package handles: a one-time browser authorization, after which enphaseR
+refreshes and rotates your OAuth tokens on every API call. Any scheduled
+job that runs at least monthly (daily is typical) keeps authentication
+alive **indefinitely** — you never log in again.
+
+Two limitations are built into Enphase's API and worth knowing up front:
+
+- The first authorization requires a browser login; `enphase_authorize()`
+  walks you through it once.
+- Refresh tokens last about a month. If nothing calls the API for longer
+  than that (machine off, job disabled), you repeat the browser step —
+  a single no-argument `enphase_authorize()` call.
+
+Note: this package talks to the *cloud* API, which works from anywhere and
+covers historical data. If you only want live readings from the Envoy
+gateway on your local network, see the
+[microinverterdata](https://cran.r-project.org/package=microinverterdata)
+package instead.
+
+## Installation
+
+```{r}
+# install.packages("pak")
+pak::pak("smach/enphaseR")
+
+# or from a local copy of this directory:
+# install.packages("path/to/enphaseR", repos = NULL, type = "source")
+```
+
+## Setup (once)
+
+1. Create a free developer account and application at
+   <https://developer-v4.enphase.com> (the free **Watt** plan allows 1,000
+   requests/month — plenty for a daily fetch). **When creating the
+   application, grant it access to both "System Details" and "Site Level
+   Production Monitoring."** System Details is what allows listing your
+   systems and reading summaries; Site Level Production Monitoring covers
+   the production intervals. An application missing one of these gets
+   `401 Not authorized to access this resource` from the affected
+   endpoints even though its credentials are perfectly valid — there is no
+   hint that the app's access list is the problem. The application page
+   shows the three values you need: **Client ID**, **Client Secret**, and
+   **API Key**.
+2. In an interactive R session:
+
+```{r}
+library(enphaseR)
+
+enphase_authorize(
+  client_id = "your-client-id",
+  client_secret = "your-client-secret",
+  api_key = "your-api-key"
+)
+```
+
+Your browser opens; log in with your Enphase **homeowner** account,
+approve, and paste the displayed code back into R. Credentials and tokens
+are stored with restrictive permissions in
+`tools::R_user_dir("enphaseR", "config")` (override with the
+`ENPHASER_CONFIG_DIR` environment variable or the `config_dir` argument).
+
+## Usage
+
+```{r}
+# Find your system_id (most homeowners have exactly one system)
+enphase_systems()
+
+# Yesterday's production, one row per 15-minute interval
+prod <- enphase_production(system_id = 1234567)
+prod
+#> # A tibble: 96 x 3
+#>   date       end_at              wh_del
+#>   <date>     <dttm>               <dbl>
+#> 1 2026-07-17 2026-07-17 00:15:00      0
+#> ...
+
+# Backfill a date range (one API request per day, rate-limit aware)
+enphase_production(1234567, start_date = "2026-06-01", end_date = "2026-06-30")
+
+# Current status and lifetime production
+enphase_summary(1234567)
+```
+
+Results are plain tibbles — save them however you like
+(`readr::write_csv()`, `saveRDS()`, parquet, a database, ...).
+
+**Expect your totals to differ from the Enlighten app by around 1%.**
+Enphase records production two ways: what the site's revenue-grade
+production meter measures, and what the microinverters themselves report.
+They disagree slightly because they measure at different points in the
+system (one day on the author's system: 59.21 vs 59.76 kWh, a 0.9% gap).
+`enphase_production()` returns the **meter** values; the Enlighten
+app/website may display either source depending on the system's
+configuration. Neither number is wrong — just don't be surprised when
+they don't match to the watt-hour.
+
+To automate a daily fetch with cron or Windows Task Scheduler — the setup
+that makes re-authentication unnecessary — see the vignette:
+`vignette("enphaseR")`.
+
+## Functions
+
+| Function                  | Purpose                                                        |
+|---------------------------|----------------------------------------------------------------|
+| `enphase_authorize()`     | One-time (or recovery) interactive browser authorization       |
+| `enphase_refresh_tokens()`| Refresh + rotate tokens; called automatically by data functions |
+| `enphase_systems()`       | List your systems and their `system_id`s                       |
+| `enphase_summary()`       | One-row snapshot: current power, today's and lifetime energy   |
+| `enphase_production()`    | 15-minute production intervals for a date or date range        |
+
+Consumption, battery, and other endpoints aren't covered yet; they'd slot
+into the same request machinery if there's demand.
