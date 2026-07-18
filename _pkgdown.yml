@@ -4,10 +4,6 @@ template:
   bootstrap: 5
   light-switch: true
   bootswatch: zephyr
-  bslib:
-    primary: "#e8871a"          # solar amber
-    base_font: {google: "Source Sans 3"}
-    code_font: {google: "Source Code Pro"}
 
 reference:
 - title: Authentication
